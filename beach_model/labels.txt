@@ -1,0 +1,2 @@
+0 beach
+1 notbeach
