@@ -1,23 +1,43 @@
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+from keras.models import load_model  # TensorFlow is required for Keras to work
+from PIL import Image, ImageOps  # Install pillow instead of PIL
+import numpy as np
 
-def face_detector(file_name):
-	img = cv2.imread("zima-1.jpg")
+# Disable scientific notation for clarity
+np.set_printoptions(suppress=True)
 
-	face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+# Load the model
+model = load_model("converted/keras_Model.h5", compile=False)
 
-	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Load the labels
+class_names = open("converted/labels.txt", "r").readlines()
 
-	faces = face_cascade.detectMultiScale(gray, 1.3, 1)
+# Create the array of the right shape to feed into the keras model
+# The 'length' or number of images you can put into the array is
+# determined by the first position in the shape tuple, in this case 1
+data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-	for (x, y, width, height) in faces:
-		cv2.rectangle(img, (x, y), (x + width, y + height), (255, 0, 0), 3)
+# Replace this with the path to your image
+image = Image.open("resources/test_photos/test-zima.jpg").convert("RGB")
 
-	return img
+# resizing the image to be at least 224x224 and then cropping from the center
+size = (224, 224)
+image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
 
+# turn the image into a numpy array
+image_array = np.asarray(image)
 
-img = face_detector("ogway.jpg")
+# Normalize the image
+normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
 
-cv2.imshow('Face detection', img)
-cv2.waitKey(0)
+# Load the image into the array
+data[0] = normalized_image_array
+
+# Predicts the model
+prediction = model.predict(data)
+index = np.argmax(prediction)
+class_name = class_names[index]
+confidence_score = prediction[0][index]
+
+# Print prediction and confidence score
+print("Class:", class_name[2:], end="")
+print("Confidence Score:", confidence_score)

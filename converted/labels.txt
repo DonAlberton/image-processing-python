@@ -1,0 +1,4 @@
+0 Zima
+1 Jesien
+2 Wiosna
+3 Lato
