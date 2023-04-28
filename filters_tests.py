@@ -8,7 +8,7 @@ def beach_images_filter(image_name):
     model = load_model("beach_model/keras_Model.h5", compile=False)
     class_names = open("beach_model/labels.txt", "r").readlines()
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    image = Image.open("resources/test_photos/river_forest.jpg").convert("RGB")
+    image = Image.open(image_name).convert("RGB")
 
     size = (224, 224)
     image = ImageOps.fit(image, size, Image.LANCZOS)
@@ -30,7 +30,7 @@ def indoor_images_filter(image_name):
     model = load_model("indoor_model/keras_Model.h5", compile=False)
     class_names = open("indoor_model/labels.txt", "r").readlines()
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    image = Image.open("resources/test_photos/indoor_photo.jpg").convert("RGB")
+    image = Image.open(image_name).convert("RGB")
 
     size = (224, 224)
     image = ImageOps.fit(image, size, Image.LANCZOS)
@@ -48,4 +48,8 @@ def indoor_images_filter(image_name):
     print("Confidence Score:", confidence_score)
 
 
-if "__main__" == main
+
+indoor_images_filter("resources/test_photos/indoor_photo.jpg")
+indoor_images_filter("resources/test_photos/Mountain-Valid.jpeg")
+beach_images_filter("resources/test_photos/beach_1.jpg")
+beach_images_filter("resources/test_photos/desert.jpeg")

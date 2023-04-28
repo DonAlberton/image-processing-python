@@ -1,2 +1,2 @@
-0 indoor_photos
-1 outdoor_photos
+0 indoor_photo
+1 outdoor_photo
