@@ -2,6 +2,8 @@ from keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
 
+import main
+
 
 def beach_images_filter(image_name):
     np.set_printoptions(suppress=True)
@@ -24,6 +26,7 @@ def beach_images_filter(image_name):
 
     print("Class:", class_name[2:], end="")
     print("Confidence Score:", confidence_score)
+    return confidence_score
 
 def indoor_images_filter(image_name):
     np.set_printoptions(suppress=True)
@@ -46,10 +49,13 @@ def indoor_images_filter(image_name):
 
     print("Class:", class_name[2:], end="")
     print("Confidence Score:", confidence_score)
-
+    return confidence_score
 
 
 indoor_images_filter("resources/test_photos/indoor_photo.jpg")
 indoor_images_filter("resources/test_photos/Mountain-Valid.jpeg")
 beach_images_filter("resources/test_photos/beach_1.jpg")
 beach_images_filter("resources/test_photos/desert.jpeg")
+main.seasons_filter("resources/test_photos/test-zima.jpg")
+main.seasons_filter("resources/test_photos/test-lato.jpg")
+main.seasons_filter("resources/test_photos/test-jesien.jpg")
