@@ -1,49 +1,66 @@
-import PySimpleGUI as sg
+import tkinter as tk
+from tkinter import BooleanVar, IntVar, ttk, filedialog
+from PIL import Image, ImageTk
 
-sg.theme("Dark")
 
-# Define the window's contents
-# layout = [[sg.Text("What's your name?")],
-#           [sg.Input(key='-INPUT-')],
-#           [sg.Text(size=(40,1), key='-OUTPUT-')],
-#           [sg.Button('Ok'), sg.Button('Quit')]]
+class App(tk.Tk):
 
-column_left = [
-    [sg.FileBrowse("Wybierz plik", file_types=[("Obraz", "*.png")], size=(10, 1))],
-    [sg.Frame("Twój obraz:", layout=[[]], expand_x=True, expand_y=True)],
-    [sg.Frame("Wybierz filtry:", layout=[
-        [sg.Checkbox("Filtr 1", default=True)],
-        [sg.Checkbox("Filtr 2", default=True)],
-        [sg.Checkbox("Filtr 3", default=True)],
-        [sg.Checkbox("Filtr 4", default=True)],
-        [sg.Checkbox("Filtr 5", default=True)],
-    ])],
-    [sg.Button("Szukaj", size=(10, 1))],
-]
+    def __init__(self):
+        super().__init__()
 
-column_right = [
-    [sg.Frame("Znalezione obrazy pasujące do wybranych filtrów:", layout=[[]], expand_x=True, expand_y=True)],
+        # root window
+        self.title('PROJ')
+        self.geometry('850x600')
 
-    [sg.Button(f'{n+1}', size=(4, 1)) for n in range(4)],
-]
 
-layout = [[
-    sg.Column(column_left, element_justification="center", expand_x=True, expand_y=True),
-    sg.VSeperator(),
-    sg.Column(column_right, element_justification="center", expand_x=True, expand_y=True),
-]]
+        self.test_image = ImageTk.PhotoImage(Image.open("test.png").resize((64,64)))
 
-# Create the window
-window = sg.Window('PROJ', layout, size=(900, 600))
+        # Filtry
+        settings = ttk.LabelFrame(self, text="Ustawienia")
+        settings.pack(fill='y', padx=10, pady=10, side='left')
 
-# Display and interact with the Window using an Event Loop
-while True:
-    event, values = window.read()
-    # See if user wants to quit or window was closed
-    if event == sg.WINDOW_CLOSED or event == 'Quit':
-        break
-    # Output a message to the window
-    #window['-OUTPUT-'].update('Hello ' + values['-INPUT-'] + "! Thanks for trying PySimpleGUI")
+        # Wybierz plik
+        btn = ttk.Button(settings, text='Wybierz plik')
+        btn.pack(padx=10, pady=10)
 
-# Finish up by removing from the screen
-window.close()
+        #  wybrany
+        selected_image = ttk.Label(settings, image=self.test_image, padding=5)
+        selected_image.pack()
+
+        self.filter_1_value = BooleanVar(value=True)
+        filter_1 = ttk.Checkbutton(settings, text="Filtr 1", variable=self.filter_1_value, onvalue=True, offvalue=False)
+        filter_1.pack()
+
+        self.filter_2_value = BooleanVar(value=True)
+        filter_2 = ttk.Checkbutton(settings, text="Filtr 2", variable=self.filter_2_value, onvalue=True, offvalue=False)
+        filter_2.pack()
+
+        self.filter_3_value = BooleanVar(value=True)
+        filter_3 = ttk.Checkbutton(settings, text="Filtr 3", variable=self.filter_3_value, onvalue=True, offvalue=False)
+        filter_3.pack()
+
+        self.filter_4_value = BooleanVar(value=True)
+        filter_4 = ttk.Checkbutton(settings, text="Filtr 4", variable=self.filter_4_value, onvalue=True, offvalue=False)
+        filter_4.pack()
+
+        self.filter_5_value = BooleanVar(value=True)
+        filter_5 = ttk.Checkbutton(settings, text="Filtr 5", variable=self.filter_5_value, onvalue=True, offvalue=False)
+        filter_5.pack()
+
+        # Szukaj
+        search = ttk.Button(settings, text='Szukaj')
+        search.pack(padx=10, pady=10)
+
+        # Znalezione obrazy
+        images = ttk.LabelFrame(self, text="Znalezione obrazy")
+        images.pack(fill='both', expand=True, padx=10, pady=10, side="right")
+
+        for i in range(8):
+            test = ttk.Label(images, image=self.test_image, padding=10)
+            test.pack(anchor='nw', side="left")
+
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
