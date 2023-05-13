@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import BooleanVar, ttk, filedialog
 from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
+from typing import Tuple, List
 
 
-def get_images(filters: tuple[bool,bool,bool,bool,bool], image: str) -> list[str]:
+def get_images(filters: Tuple[bool,bool,bool,bool,bool], image: str) -> List[str]:
     # PLACEHOLDER
     return ["test.png"] * 27
 
