@@ -1,6 +1,7 @@
 from keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
+import cv2
 
 
 def beach_images_filter(image_name):
@@ -68,6 +69,22 @@ def seasons_filter(image_name):
     return confidence_score, class_name[2:-1]
 
 
+def face_detection(image):
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    img = cv2.imread(image)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.3, 4)
+    for (x, y, width, height) in faces:
+        cv2.rectangle(img, (x, y), (x + width, y + height), (255, 0, 0), 3)
+
+    has_faces = False
+    if faces.size>0:
+        has_faces = True
+
+    return img, has_faces
+
+
+
 #indoor_images_filter("resources/test_photos/indoor_photo.jpg")
 #indoor_images_filter("resources/test_photos/Mountain-Valid.jpeg")
 #beach_images_filter("resources/test_photos/beach_1.jpg")
@@ -76,10 +93,14 @@ def seasons_filter(image_name):
 
 def classify_given_image(image):
     is_winter = True if seasons_filter(image)[1] == 'zima' else False
-    is_beach = True if indoor_images_filter(image)[1] == 'zima' else False
-    is_indoor = True if beach_images_filter(image)[1] == 'zima' else False
-    image_classification = {'isWinter': is_winter, 'isBeach': is_beach, 'isIndoor': is_indoor}
+    is_beach = True if beach_images_filter(image)[1] == 'beach' else False
+    is_indoor = True if indoor_images_filter(image)[1] == 'indoor_photo' else False
+    has_faces = face_detection(image)[1]
+    image_classification = {'isWinter': is_winter, 'isBeach': is_beach, 'isIndoor': is_indoor, 'hasFaced': has_faces}
+
     return image_classification
 
 if __name__ == "__main__":
-    print(classify_given_image("resources/test_photos/test-zima.jpg"))
+    #print(classify_given_image("resources/test_photos/test-zima.jpg"))
+    #face_detection("resources/test_photos/test-zima.jpg")
+    print(classify_given_image("resources/test_photos/beach_people.png"))
