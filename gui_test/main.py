@@ -2,10 +2,9 @@ import tkinter as tk
 from tkinter import BooleanVar, ttk, filedialog
 from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
-from typing import Tuple, List
 
 
-def get_images(filters: Tuple[bool,bool,bool,bool,bool], image: str) -> List[str]:
+def get_images(filters: dict[str, str], image: str) -> list[str]:
     # PLACEHOLDER
     return ["test.png"] * 27
 
@@ -36,15 +35,15 @@ class App(tk.Tk):
         self.selected_image_preview.pack()
 
         self.filter_1_value = BooleanVar(value=True)
-        filter_1 = ttk.Checkbutton(settings, text="Filtr 1", variable=self.filter_1_value, onvalue=True, offvalue=False)
+        filter_1 = ttk.Checkbutton(settings, text="Zima", variable=self.filter_1_value, onvalue=True, offvalue=False)
         filter_1.pack()
 
         self.filter_2_value = BooleanVar(value=True)
-        filter_2 = ttk.Checkbutton(settings, text="Filtr 2", variable=self.filter_2_value, onvalue=True, offvalue=False)
+        filter_2 = ttk.Checkbutton(settings, text="Plaża", variable=self.filter_2_value, onvalue=True, offvalue=False)
         filter_2.pack()
 
         self.filter_3_value = BooleanVar(value=True)
-        filter_3 = ttk.Checkbutton(settings, text="Filtr 3", variable=self.filter_3_value, onvalue=True, offvalue=False)
+        filter_3 = ttk.Checkbutton(settings, text="Wewnątrz", variable=self.filter_3_value, onvalue=True, offvalue=False)
         filter_3.pack()
 
         self.filter_4_value = BooleanVar(value=True)
@@ -52,7 +51,7 @@ class App(tk.Tk):
         filter_4.pack()
 
         self.filter_5_value = BooleanVar(value=True)
-        filter_5 = ttk.Checkbutton(settings, text="Filtr 5", variable=self.filter_5_value, onvalue=True, offvalue=False)
+        filter_5 = ttk.Checkbutton(settings, text="Twarze", variable=self.filter_5_value, onvalue=True, offvalue=False)
         filter_5.pack()
 
         # Szukaj
@@ -78,7 +77,13 @@ class App(tk.Tk):
         self.selected_image_preview.configure(image=self.selected_image)
 
     def search(self):
-        filters = (self.filter_1_value.get(), self.filter_2_value.get(), self.filter_3_value.get(), self.filter_4_value.get(), self.filter_5_value.get())
+        #filters = (self.filter_1_value.get(), self.filter_2_value.get(), self.filter_3_value.get(), self.filter_4_value.get(), self.filter_5_value.get())
+        filters = {
+            'isWinter': self.filter_1_value.get(), 
+            'isBeach': self.filter_2_value.get(), 
+            'isIndoor': self.filter_3_value.get(), 
+            'hasFaced': self.filter_4_value.get()
+        }
 
         files = get_images(filters, self.selected_file)
         self.images = []
