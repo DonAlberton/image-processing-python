@@ -1,49 +1,120 @@
-import PySimpleGUI as sg
+import tkinter as tk
+from tkinter import BooleanVar, ttk, filedialog
+from tkinter.scrolledtext import ScrolledText
+from PIL import Image, ImageTk
 
-sg.theme("Dark")
 
-# Define the window's contents
-# layout = [[sg.Text("What's your name?")],
-#           [sg.Input(key='-INPUT-')],
-#           [sg.Text(size=(40,1), key='-OUTPUT-')],
-#           [sg.Button('Ok'), sg.Button('Quit')]]
+def get_images(filters: dict[str, str], image: str) -> list[str]:
+    # PLACEHOLDER
+    return ["test.png"] * 27
 
-column_left = [
-    [sg.FileBrowse("Wybierz plik", file_types=[("Obraz", "*.png")], size=(10, 1))],
-    [sg.Frame("Twój obraz:", layout=[[]], expand_x=True, expand_y=True)],
-    [sg.Frame("Wybierz filtry:", layout=[
-        [sg.Checkbox("Filtr 1", default=True)],
-        [sg.Checkbox("Filtr 2", default=True)],
-        [sg.Checkbox("Filtr 3", default=True)],
-        [sg.Checkbox("Filtr 4", default=True)],
-        [sg.Checkbox("Filtr 5", default=True)],
-    ])],
-    [sg.Button("Szukaj", size=(10, 1))],
-]
 
-column_right = [
-    [sg.Frame("Znalezione obrazy pasujące do wybranych filtrów:", layout=[[]], expand_x=True, expand_y=True)],
+class App(tk.Tk):
 
-    [sg.Button(f'{n+1}', size=(4, 1)) for n in range(4)],
-]
+    def __init__(self):
+        super().__init__()
 
-layout = [[
-    sg.Column(column_left, element_justification="center", expand_x=True, expand_y=True),
-    sg.VSeperator(),
-    sg.Column(column_right, element_justification="center", expand_x=True, expand_y=True),
-]]
+        # root window
+        self.title('PROJ')
+        self.geometry('830x600')
+        self.resizable(False, False)
 
-# Create the window
-window = sg.Window('PROJ', layout, size=(900, 600))
+        # Filtry
+        settings = ttk.LabelFrame(self, text="Ustawienia")
+        settings.pack(fill='y', padx=10, pady=10, side='left')
 
-# Display and interact with the Window using an Event Loop
-while True:
-    event, values = window.read()
-    # See if user wants to quit or window was closed
-    if event == sg.WINDOW_CLOSED or event == 'Quit':
-        break
-    # Output a message to the window
-    #window['-OUTPUT-'].update('Hello ' + values['-INPUT-'] + "! Thanks for trying PySimpleGUI")
+        # Wybierz plik
+        btn = ttk.Button(settings, text='Wybierz plik', command=self.select_file)
+        btn.pack(padx=10, pady=10)
 
-# Finish up by removing from the screen
-window.close()
+        #  wybrany
+        self.selected_file = "blank.png"
+        self.selected_image = ImageTk.PhotoImage(Image.open(self.selected_file).resize((64,64)))
+
+        self.selected_image_preview = ttk.Label(settings, image=self.selected_image, padding=5)
+        self.selected_image_preview.pack()
+
+        self.filter_1_value = BooleanVar(value=True)
+        filter_1 = ttk.Checkbutton(settings, text="Zima", variable=self.filter_1_value, onvalue=True, offvalue=False)
+        filter_1.pack()
+
+        self.filter_2_value = BooleanVar(value=True)
+        filter_2 = ttk.Checkbutton(settings, text="Plaża", variable=self.filter_2_value, onvalue=True, offvalue=False)
+        filter_2.pack()
+
+        self.filter_3_value = BooleanVar(value=True)
+        filter_3 = ttk.Checkbutton(settings, text="Wewnątrz", variable=self.filter_3_value, onvalue=True, offvalue=False)
+        filter_3.pack()
+
+        self.filter_4_value = BooleanVar(value=True)
+        filter_4 = ttk.Checkbutton(settings, text="Filtr 4", variable=self.filter_4_value, onvalue=True, offvalue=False)
+        filter_4.pack()
+
+        self.filter_5_value = BooleanVar(value=True)
+        filter_5 = ttk.Checkbutton(settings, text="Twarze", variable=self.filter_5_value, onvalue=True, offvalue=False)
+        filter_5.pack()
+
+        # Szukaj
+        search = ttk.Button(settings, text='Szukaj', command=self.search)
+        search.pack(padx=10, pady=10)
+
+        # Wyczyść
+        clear = ttk.Button(settings, text='Wyczyść', command=self.clear_images)
+        clear.pack(padx=10, pady=5)
+
+        # Znalezione obrazy
+        text = ScrolledText(self, state='disable')
+        text.pack(fill='both', expand=True, padx=10, pady=10, side="right")
+        self.found_images = tk.Frame(text)
+        text.window_create('1.0', window=self.found_images)
+
+    def select_file(self):
+        self.selected_file = filedialog.askopenfilename()
+
+        img = Image.open(self.selected_file)
+        img.thumbnail((64,64))
+        self.selected_image = ImageTk.PhotoImage(img)
+        self.selected_image_preview.configure(image=self.selected_image)
+
+    def search(self):
+        #filters = (self.filter_1_value.get(), self.filter_2_value.get(), self.filter_3_value.get(), self.filter_4_value.get(), self.filter_5_value.get())
+        filters = {
+            'isWinter': self.filter_1_value.get(), 
+            'isBeach': self.filter_2_value.get(), 
+            'isIndoor': self.filter_3_value.get(), 
+            'hasFaced': self.filter_4_value.get()
+        }
+
+        files = get_images(filters, self.selected_file)
+        self.images = []
+        for file in files:
+            img = Image.open(file)
+            img.thumbnail((128,128))
+            self.images.append(ImageTk.PhotoImage(img))
+
+        self.clear_images()
+        for i in range(len(self.images)):
+            img_button = tk.Button(self.found_images, image=self.images[i], height=128, width=128, command=lambda file=files[i]: self.image_preview(file))
+            img_button.grid(row=i//5, column=i%5)
+
+    def clear_images(self):
+        for widget in self.found_images.winfo_children():
+            widget.destroy()
+
+    def image_preview(self, file):
+        preview_window = tk.Toplevel(self)
+        preview_window.title("Podgląd obrazu") 
+        preview_window.resizable(False, False)
+        preview_window.grab_set()
+
+        img = Image.open(file)
+        img.thumbnail((800,800))
+        self.preview_image = ImageTk.PhotoImage(img)
+
+        ttk.Label(preview_window, image=self.preview_image, padding=5).pack()
+        ttk.Label(preview_window, text=file, padding=5).pack()
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

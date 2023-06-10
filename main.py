@@ -1,12 +1,11 @@
-from keras.models import load_model  # TensorFlow is required for Keras to work
-from PIL import Image, ImageOps  # Install pillow instead of PIL
+from filters_implementation import classify_given_image
 import numpy as np
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
 # Load the model
-model = load_model("seasons_model/keras_Model.h5", compile=False)
+model = load_model("seasons_model/keras_model.h5", compile=False)
 
 # Load the labels
 class_names = open("seasons_model/labels.txt", "r").readlines()
@@ -41,3 +40,6 @@ confidence_score = prediction[0][index]
 # Print prediction and confidence score
 print("Class:", class_name[2:], end="")
 print("Confidence Score:", confidence_score)
+
+if __name__ == "__main__":
+    print(classify_given_image("resources/test_photos/test-zima.jpg"))
