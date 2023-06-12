@@ -3,11 +3,12 @@ import tkinter as tk
 from tkinter import BooleanVar, ttk, filedialog
 from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
+from typing import List, Dict
 
 from filters_implementation import classify_given_image
 
 
-def get_images(filters: dict[str, bool], image: str) -> list[str]:
+def get_images(filters: Dict[str, bool], image: str) -> List[str]:
 
     images = []
     classification = classify_given_image(image)
@@ -18,7 +19,7 @@ def get_images(filters: dict[str, bool], image: str) -> list[str]:
         if os.path.isfile(file):
 
             values = filename.split('-')[0].strip()
-
+            if len(values) < 5: continue
             winter = (classification["isWinter"] == (values[0]=='1')) if filters["isWinter"] else True
             beach = (classification["isBeach"] == (values[1]=='1')) if filters["isBeach"] else True
             indoor = (classification["isIndoor"] == (values[2]=='1')) if filters["isIndoor"] else True
@@ -27,7 +28,6 @@ def get_images(filters: dict[str, bool], image: str) -> list[str]:
 
             if winter and beach and indoor and faces and glasses:
                 images.append(file)
-                print(file)
 
     return images
 
@@ -57,23 +57,26 @@ class App(tk.Tk):
         self.selected_image_preview = ttk.Label(settings, image=self.selected_image, padding=5)
         self.selected_image_preview.pack()
 
-        self.filter_1_value = BooleanVar(value=True)
+        info_label = ttk.Label(settings, text="Uwzględnione filtry:")
+        info_label.pack()
+
+        self.filter_1_value = BooleanVar(value=False)
         filter_1 = ttk.Checkbutton(settings, text="Zima", variable=self.filter_1_value, onvalue=True, offvalue=False)
         filter_1.pack()
 
-        self.filter_2_value = BooleanVar(value=True)
+        self.filter_2_value = BooleanVar(value=False)
         filter_2 = ttk.Checkbutton(settings, text="Plaża", variable=self.filter_2_value, onvalue=True, offvalue=False)
         filter_2.pack()
 
-        self.filter_3_value = BooleanVar(value=True)
+        self.filter_3_value = BooleanVar(value=False)
         filter_3 = ttk.Checkbutton(settings, text="Wewnątrz", variable=self.filter_3_value, onvalue=True, offvalue=False)
         filter_3.pack()
 
-        self.filter_4_value = BooleanVar(value=True)
+        self.filter_4_value = BooleanVar(value=False)
         filter_4 = ttk.Checkbutton(settings, text="Twarz", variable=self.filter_4_value, onvalue=True, offvalue=False)
         filter_4.pack()
 
-        self.filter_5_value = BooleanVar(value=True)
+        self.filter_5_value = BooleanVar(value=False)
         filter_5 = ttk.Checkbutton(settings, text="Okulary", variable=self.filter_5_value, onvalue=True, offvalue=False)
         filter_5.pack()
 

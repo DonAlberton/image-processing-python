@@ -114,7 +114,7 @@ def show_image(image):
 
 
 def classify_given_image(image):
-    is_winter = True if seasons_filter(image)[1] == 'zima' else False
+    is_winter = True if seasons_filter(image)[1] == 'Zima' else False
     is_beach = True if beach_images_filter(image)[1] == 'beach' else False
     is_indoor = True if indoor_images_filter(image)[1] == 'indoor_photo' else False
     contains_glasses = True if glasses_filter(image)[1] == 'Z okularami' else False
@@ -124,5 +124,5 @@ def classify_given_image(image):
     return image_classification
 
 if __name__ == "__main__":
-    print(classify_given_image("resources/test_photos/beach_people.png"))
+    print(classify_given_image("baza/10011-07.jpg"))
     show_image(face_detection("resources/test_photos/beach_people.png")[0])
